@@ -80,8 +80,10 @@ app.get('/authorize', async (req, res) => {
         // Check if user credentials are valid
         const results = await query('SELECT * FROM Gamer WHERE Username = ? AND Password = ?', [username, password]);
 
-        if (results.length <= 0)
-            return res.redirect('/login');
+        if (results.length <= 0) {
+            res.redirect('/login');
+            return;
+        }
 
         const gamer = results[0];
 
@@ -114,8 +116,22 @@ app.get('/home', verifyToken, (req, res) => {
     res.sendFile(path.join(__dirname, 'views/home.html'));
 });
 
-app.get('/game', verifyToken, (req, res) => {
-    res.sendFile(path.join(__dirname, 'views/game.html'));
+// Route to fetch genres from the database
+app.get('/genres', verifyToken, async (req, res) => {
+    try {
+        // Fetch genres from the 'Genre' table
+        const genres = await query('SELECT * FROM Genre');
+
+        // Send the genres as JSON
+        res.json({ genres });
+    } catch (error) {
+        console.error('Error fetching genres:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get('/home.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'views/home.js'));
 });
 
 // Route for serving the CSS file
@@ -125,7 +141,7 @@ app.get('/style.css', (req, res) => {
 
 // Default route redirects to the login page
 app.get('/', (req, res) => {
-    res.redirect('/login');
+    res.redirect('/home');
 });
 
 // The 404 route also requires token verification
