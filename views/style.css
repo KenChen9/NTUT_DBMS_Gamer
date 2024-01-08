@@ -1,0 +1,14 @@
+.myform {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100px;
+}
+
+.myform>* {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+
+.myform-submit {
+    width: 30%;
+}
